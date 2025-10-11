@@ -1,0 +1,21 @@
+digraph G {
+  R1 -> R10 [label="804"];
+  R2 -> R14 [label="1060"];
+  R3 -> R5 [label="1016"];
+  R4 -> R9 [label="1068"];
+  R16 -> R4 [label="1032"];
+  R5 -> R1 [label="500"];
+  R6 -> R17 [label="672"];
+  R7 -> R6 [label="720"];
+  R9 -> R7 [label="1044"];
+  R8 -> R3 [label="644"];
+  R11 -> R8 [label="1072"];
+  R10 -> R18 [label="904"];
+  R12 -> R16 [label="996"];
+  R13 -> R12 [label="860"];
+  R14 -> R11 [label="492"];
+  R15 -> R19 [label="632"];
+  R18 -> R20 [label="1004"];
+  R19 -> R13 [label="732"];
+  R20 -> R15 [label="908"];
+}
