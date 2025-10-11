@@ -6,7 +6,7 @@ GAP = -8
 NEG_INF = -10**12  # très grand négatif pour "interdire"
 
 # lit les séquences depuis un fichier
-def read_two_fastq(path):
+def read_all_fastq(path):
     seqs = []
     with open(path, "r") as f:
         while True:
@@ -17,11 +17,8 @@ def read_two_fastq(path):
             f.readline()                 
             f.readline()                
             seqs.append(seq)
-            if len(seqs) == 2:
-                break
-    if len(seqs) != 2:
-        raise ValueError("Le FASTQ doit contenir exactement 2 séquences.")
-    return seqs[0], seqs[1]
+          
+    return seqs
 
 """
     Chevauchement suffixe(x) vs préfixe(y) = semi-global asymétrique.
@@ -90,24 +87,66 @@ def align_overlap(x, y):
     align2 = ''.join(reversed(a2))
 
     # Longueur du chevauchement = colonnes où les deux lettres sont réelles
-    overlap_len = sum(1 for c1, c2 in zip(align1, align2) if c1 != '-' and c2 != '-')
+    #overlap_len = sum(1 for c1, c2 in zip(align1, align2) if c1 != '-' and c2 != '-')
 
-    return best_score, align1, align2, overlap_len
+    return best_score
+
+# Construire la matrice de chevauchement pour une liste de reads
+def build_overlap_matrix(reads):
+    n = len(reads)
+    matrix = [[0 for _ in range(n)] for _ in range(n)]
+
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                matrix[i][j] = 0  # diagonale nulle
+            else:
+                score = align_overlap(reads[i], reads[j])
+                matrix[i][j] = score
+    return matrix
+ 
+# Construire une liste d'arêtes (i, j, score) pour les scores >= threshold
+def build_graph(matrix, threshold=80):
+    n = len(matrix)
+    edges = []
+    for i in range(n):
+        for j in range(n):
+            if i != j and matrix[i][j] >= threshold:
+                edges.append((i + 1, j + 1, matrix[i][j]))  # R1 → R2 ...
+    return edges
+
+# exporter la liste d'arêtes au format DOT
+def export_to_dot(edges, path="overlap_graph.dot"):
+    with open(path, "w") as f:
+        f.write("digraph G {\n")
+        for i, j, score in edges:
+            f.write(f'  R{i} -> R{j} [label="{score}"];\n')
+        f.write("}\n")
+    print(f"Graph exported to {path}")
 
 def main():
-    if len(sys.argv) != 2:
-        print("Le fichier doit avoir deux séquences.")
-        sys.exit(1)
+    path = "reads.fq"  #  fichier FASTQ
+    reads = read_all_fastq(path)
+    n = len(reads)
 
-    path = sys.argv[1]
-    x, y = read_two_fastq(path)
-    score, align1, align2, overlap_len = align_overlap(x, y)
+    print("Nombre de reads lus :", n)
+    print("Calcul de la matrice des chevauchements...\n")
 
-    
-    print("SCORE :", score)
-    print("ALIGNEMENT X :\n", align1)
-    print("ALIGNEMENT Y :\n", align2)
-    print("LONGUEUR DU CHEVAUCHEMENT :", overlap_len)
+    matrix = build_overlap_matrix(reads)
+
+    # Affichage simple
+    print("MATRICE DES SCORES (20x20):")
+    for i in range(n):
+        for j in range(n):
+            print(f"{matrix[i][j]:6}", end=" ")
+        print()
+
+    #Graphe filtré scrore >= 80
+    edges = build_graph(matrix, threshold=80)
+    print(f"\nNombre d'arêtes avec score >= 80 : {len(edges)}")
+    export_to_dot(edges, path="overlap_graph.dot")
+        
 
 if __name__ == "__main__":
     main()
+
