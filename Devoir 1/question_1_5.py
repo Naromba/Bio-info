@@ -82,12 +82,6 @@ def align_overlap(x, y):
         else:  # sécurité
             break
 
-    # inverser les alignements
-    #align1 = ''.join(reversed(a1))
-    #align2 = ''.join(reversed(a2))
-
-    # Longueur du chevauchement = colonnes où les deux lettres sont réelles
-    #overlap_len = sum(1 for c1, c2 in zip(align1, align2) if c1 != '-' and c2 != '-')
 
     return best_score
 
