@@ -403,12 +403,7 @@ def plast_search(input_seq, db_path, seed="11111111111", E=4, ss_threshold=1e-3)
 # -- Exécution principale --
 if __name__ == "__main__":
 
-    #  1) Charger la séquence à rechercher 
-    input_path = "unknown.fasta"
-    input_data = load_fasta(input_path)
-    input_seq = input_data[0][1]  # On prend la première séquence du fichier
-
-    # 2) Charger la banque de données 
+     # 2) Charger la banque de données 
     db_path = "tRNAs.fasta"
 
     # 3) Paramètres simples
@@ -416,11 +411,22 @@ if __name__ == "__main__":
     E = 4                  # Seuil d’extension
     ss_threshold = 1e-3    # Seuil de significativité
 
-    # 4) Exécuter le PLAST 
-    plast_search(
+    #  1) Charger la séquence à rechercher 
+    input_path = "unknown.fasta"
+    input_data = load_fasta(input_path)
+   # 4) Exécuter le PLAST pour chaque séquence
+    for query_id, input_seq in input_data:
+    
+        print("\n==============================")
+        print("   Résultats pour :", query_id)
+        print("==============================\n")
+        plast_search(
         input_seq,
         db_path=db_path,
         seed=seed,
         E=E,
         ss_threshold=ss_threshold
     )
+
+   
+    
