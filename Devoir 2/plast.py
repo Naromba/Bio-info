@@ -1,3 +1,11 @@
+# Auteurs : Naromba Conde (20251772) et Aissatou Ndiaye (20175732)
+# Date    : Novembre 2025
+# Description : Implémentation simplifiée de l'algorithme PLAST pour la recherche   
+# de similarités entre une séquence d'entrée et une banque de données FASTA.
+
+
+
+
 import math
 
 """
